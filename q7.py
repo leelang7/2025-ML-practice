@@ -1,87 +1,65 @@
-import warnings
-warnings.filterwarnings(action='ignore')
-
-import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
-from sklearn.svm import SVC
-from sklearn.datasets import load_wine
+
+from sklearn.linear_model import ElasticNet
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
-from sklearn.utils.multiclass import unique_labels
+from sklearn.datasets import load_boston
 
-# 데이터를 불러와 학습용, 테스트용 데이터로 분리하여 반환하는 함수입니다.
+"""
+1. 사이킷런에 존재하는 데이터를 불러오고, 
+   데이터와 변수 이름을 반환하는 함수를 구현합니다.
+"""
 def load_data():
     
-    X, y = load_wine(return_X_y = True)
-    class_names = load_wine().target_names
+    X, y = load_boston(return_X_y = True)
     
-    train_X, test_X, train_y, test_y = train_test_split(X, y, test_size =0.3, random_state=0)
+    feature_names = None
     
-    return train_X, test_X, train_y, test_y, class_names
-
-# Confusion matrix 시각화를 위한 함수입니다.
-def plot_confusion_matrix(cm, y_true, y_pred, classes, normalize=False, cmap=plt.cm.OrRd):
-                          
-    title = ""
-    if normalize:
-        title = 'Normalized confusion matrix'
-    else:
-        title = 'Confusion matrix'
+    return X,y,feature_names
     
-    classes = classes[unique_labels(y_true, y_pred)]
-    if normalize:
-        # 정규화 할 때는 모든 값을 더해서 합이 1이 되도록 각 데이터를 스케일링 합니다.
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-
-    print(title, ":\n", cm)
-
-    fig, ax = plt.subplots()
-    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
-    ax.figure.colorbar(im, ax=ax)
-    ax.set(xticks=np.arange(cm.shape[1]),
-           yticks=np.arange(cm.shape[0]),
-           xticklabels=classes, yticklabels=classes,
-           title=title,
-           ylabel='True label',
-           xlabel='Predicted label')
-
-    # label을 45도 회전해서 보여주도록 변경
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-             rotation_mode="anchor")
-
-    # confusion matrix 실제 값 뿌리기
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
-    for i in range(cm.shape[0]):
-        for j in range(cm.shape[1]):
-            ax.text(j, i, format(cm[i, j], fmt),
-                    ha="center", va="center",
-                    color="white" if cm[i, j] > thresh else "black")
-    fig.tight_layout()
-    
-    plt.savefig('confusion matrix.png')
-
 """
-1. 혼동 행렬을 계산하고, 
-   시각화하기 위한 main() 함수를 완성합니다.
+2. 엘라스틱 넷(ElasticNet) 회귀를 구현하고, 
+   학습용 데이터를 바탕으로 학습시킨 모델을 
+   반환하는 함수를 완성합니다.
 """
+
+def ElasticNet_regression(train_X, train_y):
+    
+    ElasticNet_reg = None
+    
+    None
+    
+    return ElasticNet_reg
+    
+    
+# 각 변수의 beta_i 크기를 시각화하는 함수입니다.
+def plot_graph(coef):
+    coef.plot(kind='bar')
+    
+    plt.savefig("result.png")
+    
+    
 def main():
     
-    train_X, test_X, train_y, test_y, class_names = None
+    X,y,feature_names = load_data()
     
-    # SVM 모델로 분류기를 생성하고 학습합니다.
-    classifier = SVC()
-    y_pred = classifier.fit(train_X, train_y).predict(test_X)
+    train_X, test_X, train_y, test_y = train_test_split(X,y,test_size=0.2, random_state=100)
     
-    cm = None
+    elasticnet_reg = ElasticNet_regression(train_X, train_y)
     
-    plot_confusion_matrix(None, None, None, classes=None)
+    # 엘라스틱넷 회귀 모델 평가 점수 출력하기
+    score = elasticnet_reg.score(test_X,test_y)
+    print("ElasticNet 회귀의 평가 점수:", score)
     
-    # 정규화 된 혼동 행렬을 시각화합니다.
-    plot_confusion_matrix(None, None, None, classes=None, normalize = None)
+    # 엘라스틱넷 회귀의 beta_i의 크기를 저장합니다.
+    ElasticNet_coef = pd.Series(elasticnet_reg.coef_, feature_names).sort_values()
+    print("\nElasticNet 회귀의 beta_i\n", ElasticNet_coef)
     
-    return cm
+    plot_graph(ElasticNet_coef)
     
-if __name__ == "__main__":
+    return elasticnet_reg
+
+if __name__=="__main__":
     main()
