@@ -64,7 +64,7 @@ def K_means():
         ax.scatter(x = label_cluster['ftr1'], y = label_cluster['ftr2'])
         ax.scatter(x = center_x_y[0], y = center_x_y[1], s = 70,color = 'k', marker = '$%d$' % label)
     
-    fig.savefig("plot.png")
+    fig.savefig("kmeans_plot.png")
 
     print("K-means Clustering")
     print(clusterDF.groupby('target')['kmeans_label'].value_counts())
@@ -94,7 +94,7 @@ def GMM():
         label_cluster = clusterDF[clusterDF['gmm_label'] == label]
         plt.scatter(x = label_cluster['ftr1'], y = label_cluster['ftr2'])
     
-    fig.savefig("plot.png")
+    fig.savefig("gmm_plot.png")
     
     print("Gaussian Mixture Model")
     print(clusterDF.groupby('target')['gmm_label'].value_counts())
